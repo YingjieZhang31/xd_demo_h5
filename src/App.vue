@@ -6,6 +6,7 @@ const firstOperand = ref(null);
 const currentOperator = ref(null);
 const waitingForSecondOperand = ref(false);
 const expressionValue = ref("");
+const baseUrl = import.meta.env.BASE_URL;
 
 function getOperatorSymbol(operator) {
   switch (operator) {
@@ -175,7 +176,7 @@ function calculate() {
       </div>
     </section>
 
-    <a class="legacy-link" href="/legacy.html">查看改动前页面</a>
+    <a class="legacy-link" :href="`${baseUrl}legacy.html`">查看改动前页面</a>
   </main>
 </template>
 
