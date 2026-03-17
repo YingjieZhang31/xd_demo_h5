@@ -1,10 +1,13 @@
 name: Build & Release
 
-# 只有 push 标签时触发
 on:
   push:
+    branches:
+      - "**"
     tags:
       - "v*"
+  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -22,26 +25,29 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "20"
+          cache: npm
 
       # 3. 安装依赖
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --verbose
 
       # 4. Build
       - name: Build
         run: npm run build
 
-      # 5. 打包产物
+      # 5. 仅 tag 构建时打包产物
       - name: Package build
+        if: startsWith(github.ref, 'refs/tags/v')
         run: |
           mkdir release
           cp -r dist release/dist
           cd release
           zip -r ../release.zip .
 
-      # 6. 创建 Release
+      # 6. 仅 tag 构建时创建 Release
       - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           files: release.zip
